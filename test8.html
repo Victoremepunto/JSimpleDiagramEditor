@@ -1,0 +1,94 @@
+<html>
+    <meta charset='utf-8'>
+    <head>
+        <style>
+            .container
+            {
+                position:absolute;
+                border: 1px solid;
+                height: 500px;
+                width:  600px;
+            }
+
+            .node
+            {
+                height: 100px;
+                width:  100px;
+                border: solid 6px;
+                text-align: center;
+                display: inline;
+                line-height: 100px;
+                position: absolute;
+            }
+    
+            .palette
+            {
+                position:absolute;
+                border: 1px solid;
+                height: 500px;
+                width:  200px;
+                left:   650px;
+            }
+
+            .placeholder {
+                background: green;
+                position: absolute;
+            }
+
+            .info
+            {
+                position:absolute;
+                border: 1px solid;
+                height: 100px;
+                width:  200px;
+                top:    550px;
+                left:   650px;
+            }
+
+            
+
+        </style>
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+        <script type="text/javascript" src="area-notifier.js"></script>
+        <script type="text/javascript" src="node.js"></script>
+        <script type="text/javascript" src="process.js"></script>
+        <script type="text/javascript" src="painter.js"></script>
+        <script type="text/javascript" src="grid-manager.js"></script>
+    </head>
+    <body>
+        <div id='container' class="process"></div>
+        <div id='palette' class="palette">
+            <ul>
+            <div id="tarea1" abd="aaa">tarea1</div>
+            <div id="tarea2" abd="bbb">tarea2</div>
+            </ul>
+        </div>
+        <div id='container'>
+            <div id='mi_nodo' class="node" style="top:200;left:300;"></div>
+        </div>
+        <div id='areas'></div>
+        <div id='info' class="info">
+            <input type="text"></input>
+        </div>
+        <script>
+        var ar = new Area({element: $("#mi_nodo"), wide:20});
+
+        $("#mi_nodo").on('areaInvaded',function(event,data){
+            console.log('invasion!');
+        });
+
+        $("#mi_nodo").draggable();
+        /*
+
+            var grid = new GridManager({
+                'container': "container",
+                'chooser'  : "palette",
+            });
+
+            grid.addElement('one');
+            grid.addNextElement('two',0,'down');
+        */
+        </script>
+    </body>
+</html>

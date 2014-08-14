@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="lib/jquery.js"></script>
+	<script>
+
+	  var myFruits = ['orange','banana','apple'];
+	  var mis_campos = $("<select>");
+
+	  myFruits.forEach(function(elem,index) {
+	    mis_campos.append($("<option>").attr("id",index).text(elem));
+	  });
+
+	  var botones = $("<a>").append($("<button>").text("+").attr('onclick', 'f_add()'));
+	  botones.append($("<button>").text("-").attr('onclick', 'f_add()'));
+	  
+
+	  var selector_campos = $("<div>").append(mis_campos).append(botones);
+
+	  //var f_add = function(){ $(".campos").append(selector_campos) };
+	  var f_add = function(){ $("#campos").append(selector_campos.clone()) };
+
+  	  $(document).ready(function(){
+	      f_add();
+	  }); 
+
+	  // A $( document ).ready() block.
+	  $( document ).ready(function() {
+	    console.log( "document loaded" );
+	  });
+	  $( window ).load(function() {
+   	    console.log("window loaded");
+	  });
+
+	</script>
+  </head>
+  <body>
+
+    <h1> hey </h1>
+    <div id="campos"></div>
+
+  </body>
+</html>

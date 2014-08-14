@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <style>
+            .container
+            {
+                position:relative;
+                border: 1px solid;
+                height: 500px;
+                width:  600px;
+            }
+
+            .node
+            {
+                height: 100px;
+                width:  100px;
+                border: solid 6px;
+                text-align: center;
+                display: inline;
+                line-height: 100px;
+                position: absolute;
+            }
+    
+            .palette
+            {
+                position:absolute;
+                border: 1px solid;
+                height: 500px;
+                width:  200px;
+                left:   650px;
+            }
+
+            .placeholder {
+                background: green;
+                position: absolute;
+            }
+
+            .info
+            {
+                position:absolute;
+                border: 1px solid;
+                height: 100px;
+                width:  200px;
+                top:    550px;
+                left:   650px;
+            }
+
+            
+
+        </style>
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+        <script type="text/javascript" src="area-notifier-2.js"></script>
+        <script type="text/javascript" src="node.js"></script>
+        <script type="text/javascript" src="process.js"></script>
+        <script type="text/javascript" src="painter.js"></script>
+        <script type="text/javascript" src="grid-manager.js"></script>
+    </head>
+    <body>
+        <div id='container'>
+        <div id='node' class='node'> 
+            Content
+        </div>
+        </div>
+        <script>
+            function add(){
+                //var node = $("<div class='node'>");
+                var node = $("#node");
+                node.css('top','100px');
+                node.css('left','100px');
+                
+                return node;
+            }
+            var node = add();
+
+            //var area = new Area({element:$("#node"), wide:20, debug:true});
+            var area = new Area({element:node, wide:20, debug:true});
+            node.draggable();
+/*
+            node.draggable({'stop': function(event,ui){
+                    area.resetAreas();
+                }
+            });
+*/
+
+            $("#node").on('areaInvaded',function(event,data){
+                ph = $('<div>');
+                ph.addClass('placeholder');
+//            ph.attr('node-id',data.getElement());
+                ph.css('position','absolute');
+                ph.css('top',data.getAreaInvaded().getPosition().top);
+                ph.css('left',data.getAreaInvaded().getPosition().left);
+                ph.css('width',data.getAreaInvaded().getWidth());
+                ph.css('height',data.getAreaInvaded().getHeight());
+
+                $("#container").append(ph);
+                
+            });
+
+            $("#node").on('areaReleased',function(event,data){
+                ph.remove();
+            });
+
+        </script>
+    </body>
+</html>

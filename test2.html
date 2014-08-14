@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+        <link rel="stylesheet" href="../js/smoothness.css">
+        <script>
+            myAction = {
+                type:    "myTrigger",
+                message: "myTrigger fired.",
+                time:    new Date()
+            }
+            
+            
+
+            function attachAction(e,a) {
+                // attatches an action to an element ... ^^
+                //$.event.trigger(a);
+                alert('the event is about to be atached...');
+                $.event.trigger(a);
+            }
+        
+            window.onload=function(){
+                $("#content").append($("<button>").text('click me').click(function(){attachAction($(this),myAction)}));
+                $(document).on("myTrigger",function(evt){
+
+                    $("#content :button ").text('STOP DOING THAT!');
+                    console.log(evt);
+
+                });
+            }
+
+            
+    
+        </script>
+    </head>
+    <body>
+        <div id="content"/>
+    </body>
+</html>

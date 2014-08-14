@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+        <link rel="stylesheet" href="../js/smoothness.css">
+        <script type="text/javascript" src="area-notifier.js"></script>
+        <script type="text/javascript" src="grid-manager.js"></script>
+        <style>
+            .init {
+                position: absolute;
+                left: 500px;
+                top:  150px;
+                display: block;
+                text-align: center;
+                border: 1px solid;
+                width:   100px;
+                height:  50px;
+            }
+
+            .info {
+                position: absolute;
+                left 100px;
+                top:  50px;
+                display: block;
+            }
+
+            input {
+                display: block;
+            }
+
+            .placeholder {
+                background: green;
+                position: absolute;
+                left: 900px;
+                top:  300px;
+            }
+
+            .task {
+                height: 100px;
+                width:  100px;
+                border: solid 1px;
+                text-align: center;
+                display: inline;
+                line-height: 100px;
+                position: absolute;
+            }
+
+            .yard {
+                position:absolute;
+                border: 1px solid;
+                height: 500px;
+                width:  600px;
+            }
+            .palette {
+                position:absolute;
+                border: 1px solid;
+                height: 500px;
+                width:  200px;
+                left:   650px;
+                
+            }
+
+            .terminal {
+                border-radius: 50%;
+                width: 50px;
+                height: 50px; 
+                border: 1px solid;
+                position: absolute;
+                line-height: 50px;
+                text-align: center;
+            }
+
+        </style>
+        <script>
+
+            function actualizarPosiciones(e){
+                $("#xpos").val(e.offset().top);
+                $("#ypos").val(e.offset().left);
+            };
+
+            function iluminarZona(elemento) {
+                elemento.addClass("placeholder");
+            }
+
+            function apagarZona(elemento) {
+                elemento.removeClass("placeholder");
+            }
+
+            function nuevoElemento(id,clase,position) {
+
+                position = $.isEmptyObject(position)?{top:0,left:0}:position;
+
+                e = {
+                    element: 
+                        $("<div>").
+                        prop('id',id).
+                        text(id).
+                        prop('class',clase).
+                        css('top',position.top).
+                        css('left',position.left)
+                        
+                };
+
+                return e;
+            }
+
+        </script>
+    </head>
+    <body>
+        <div class="info"></div>
+        <div class="buttons"></div>
+        <div id="container">
+            <div id="palette" class="palette"></div>
+            <div id="yard" class="yard"></div>
+        </div>
+        <script>
+
+            $(".buttons").append($("<button>").text('update').text('update').click(function(){console.log(nodoInicio)}));
+
+            nodoInicio=nuevoElemento('start','terminal',{});
+            
+            ph = $("<div>");
+            ph.addClass('placeholder');
+
+            $("#yard").append(nodoInicio.element);
+
+            nodoInicio.area= new Area ({element: nodoInicio.element, wide: 20}); // Falta definir qué areas activar.
+
+            list=$("<ol>");
+            
+            for (i=0;i<10;i++)
+            {
+                option=$("<li>");
+                option
+                .val(i)
+                .prop('class','option')
+                .text('task'+i)
+                .draggable({
+                    helper:function(event){
+                        return $("<div>").prop('class','task').text($(event.target).text());
+                    } 
+                });
+                list.append(option);
+            }
+
+            $("#palette").append(list);
+
+            $(document).bind('areaInvaded',function(event,data){
+
+                console.log(data.getInvaded());
+                ph.droppable({
+                    drop: function(event,ui)
+                        {
+                            p=$(event.target).position();
+                            n=$(ui.helper[0]).text();
+                            c=$(ui.helper[0]).prop('class');
+                            e = nuevoElemento(n,c,p);
+                            $(event.target).parent().append(e.element);
+                            e.area = new Area({ element:e.element,wide:20});
+                            console.log(e);
+                        },
+                    tolerance: 'touch',
+                    accept: '.option',
+                });
+
+                ph.css('top',data.getAreaInvaded().position.top);
+                ph.css('left',data.getAreaInvaded().position.left);
+                ph.css('width',data.getAreaInvaded().width);
+                ph.css('height',data.getAreaInvaded().height);
+                $("#container").append(ph);
+           
+            });
+
+            $(document).bind('areaReleased',function(event,data){
+                $(".placeholder").remove();
+                console.log('Outside!');
+            });
+                
+        </script>
+    </body>
+</html>

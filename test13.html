@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'/>
+        <style>
+
+            #textbox
+            {
+                border: 1px solid;
+                width:  200px;
+                height: 200px;
+                overflow: auto;
+            }
+
+            #palette
+            {
+                margin: 10px;
+                border: 1px solid;
+                width:  200px;
+                height: 200px;
+            }
+
+            #playground
+            {
+                border: 1px solid;
+                width:  200px;
+                height: 200px;
+                overflow: auto;
+            }
+
+            .node
+            {
+                display: inline;
+                border: 1px solid;
+                width:  50px;
+                height: 50px;
+            }
+
+            .opt
+            {
+                border: 1px solid; 
+                width:  50px;
+            }
+
+        </style>
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+    </head>
+    <body>
+        <div id='container'>
+            <div id='textbox'>
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus pulvinar euismod. Phasellus porta diam non purus tincidunt congue. Nullam dolor sem, pretium quis sem sed, dictum viverra turpis. Pellentesque volutpat est ut pharetra dignissim. Cras euismod non mauris nec rhoncus. Ut urna sapien, aliquet at urna vel, rhoncus ultrices diam. In ornare, ligula eget luctus lobortis, orci tortor faucibus lectus, a gravida neque urna at diam. Suspendisse potenti. Maecenas euismod tristique ipsum sed rutrum.
+            </div>
+            <div id='playground'>
+            </div>
+        </div>
+        <div id='sandbox'>
+            <div id='box'>Drag Me</div>
+        </div>
+        <div id='palette'>
+            <ul id='list'>
+                <div class='opt'>a</div> 
+                <div class='opt'>b</div> 
+                <div class='opt'>c</div> 
+            </ul>
+        </div>
+        <script>
+            $("#container").droppable();
+            $("#playground").droppable();
+            $("#box").draggable();
+            $(".opt").each(function(index){
+                $(this).draggable();
+            });
+        </script>
+    </body>
+</html>

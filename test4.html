@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+        <link rel="stylesheet" href="../js/smoothness.css">
+        <script type="text/javascript" src="area-notifier.js"></script>
+        <style>
+            .Init {
+                position: absolute;
+                left: 500px;
+                top:  150px;
+                display: block;
+                text-align: center;
+                border: 1px solid;
+                width:   100px;
+                height:  50px;
+            }
+
+            .Info {
+                position: absolute;
+                left 100px;
+                top:  50px;
+                display: block;
+            }
+
+            input {
+                display: block;
+            }
+
+            .placeholder {
+                background: green;
+                position: absolute;
+                left: 900px;
+                top:  300px;
+            }
+
+        </style>
+        <script>
+
+            function actualizarPosiciones(e){
+                $("#xpos").val(e.offset().top);
+                $("#ypos").val(e.offset().left);
+            };
+
+            function iluminarZona(elemento) {
+                elemento.addClass("placeholder");
+            }
+            function apagarZona(elemento) {
+                elemento.removeClass("placeholder");
+            }
+
+        </script>
+    </head>
+    <body>
+        <div class="Info"></div>
+        <div class="row buttons">
+            <input type="button" value="getPos" onclick=actualizarPosiciones($("#Init"));>
+        </div>
+        <div id="container"></div>
+        <script>
+
+            /*
+            $(".Info").append($("<label>").prop('for','xpos').text('X position'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','xpos'));
+            $(".Info").append($("<label>").prop('for','ypos').text('Y position'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','ypos'));
+            $(".Info").append($("<label>").prop('for','inside').text('InsideObject'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','inside'));
+            $(".Info").append($("<label>").prop('for','mouseX').text('Mouse position: X'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','mouseX'));
+            $(".Info").append($("<label>").prop('for','mouseY').text('Mouse position: Y'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','mouseY'));
+
+            $(".Info").append($("<label>").prop('for','up').text('Arriba'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','up'));
+            $(".Info").append($("<label>").prop('for','down').text('Abajo'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','down'));
+            $(".Info").append($("<label>").prop('for','left').text('Izquierda'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','left'));
+            $(".Info").append($("<label>").prop('for','right').text('Derecha'));
+            $(".Info").append($("<input>").prop('type','text').attr('id','right'));
+            */
+            
+
+            $("#container").append($("<div>").prop('id','Init').prop('class','Init').text('Start'));
+            $("#container").append($("<div>").prop('id','Task').prop('class','Init').text('Task').css('top',240));
+
+            miArea = new Area({ element: $("#Init"), wide: 20});
+            miArea2 = new Area({ element: $("#Task"), wide: 20});
+
+            ph = $("<div>");
+            ph.addClass('placeholder');
+            
+            $(document).bind('areaInvaded',function(event,data){
+                console.log(data.getInvaded());
+                ph.css('top',data.getAreaInvaded().position.top);
+                ph.css('left',data.getAreaInvaded().position.left);
+                ph.css('width',data.getAreaInvaded().width);
+                ph.css('height',data.getAreaInvaded().height);
+                $("#container").append(ph);
+            });
+
+            $(document).bind('areaReleased',function(event,data){
+                console.log('Outside!');
+            });
+                
+        </script>
+    </body>
+</html>

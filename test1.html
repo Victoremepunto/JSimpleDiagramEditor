@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+        <link rel="stylesheet" href="../js/smoothness.css">
+        <style>
+            #Init {
+                position: absolute;
+                left: 500px;
+                top:  150px;
+                display: block;
+                text-align: center;
+                border: 1px solid;
+                width:   100px;
+                height:  50px;
+            }
+
+            .Info {
+                position: absolute;
+                left 100px;
+                top:  50px;
+                display: block;
+            }
+
+            input {
+                display: block;
+            }
+
+        </style>
+        <script>
+
+
+            var Area = function(pos,width,height,wide) {
+
+                this.position = pos;
+                this.width = parseInt(width);
+                this.height = parseInt(height);
+
+                this.up = {};
+                this.down = {};
+                this.left = {};
+                this.right = {};
+                this.wide = typeof(wide) !== 'undefined' ? parseInt(wide) : 0;
+
+            };
+
+            $.extend(Area.prototype, {
+                // gets jquery element, gets position and else.
+                examine: function(e) {
+
+                    this.position = {left: parseInt(e.offset().left), top: parseInt(e.offset().top)};
+                    this.width = parseInt(e.outerWidth());
+                    this.height = parseInt(e.outerHeight());
+
+                    if (this.wide > 0) {
+
+                        this.up    = new Area({ top: this.position.top - this.wide, 
+                                               left: this.position.left},
+                                               this.width,
+                                               this.wide);
+
+                        this.down  = new Area({ top: this.position.top + this.height,
+                                               left: this.position.left},
+                                                this.width,
+                                                this.wide);
+
+                        this.left  = new Area({ top: this.position.top,
+                                               left: this.position.left - this.wide},
+                                                this.wide,
+                                                this.height);
+
+                        this.right = new Area({ top: this.position.top ,
+                                               left: this.position.left + this.width},
+                                                this.wide,
+                                                this.height);
+                    }
+                    /*
+                        console.log("ESTO es UP: "+ this.up.position.top );
+                        console.log("ESTO es DOWN: "+ this.down.position.top );
+                        console.log("ESTO es LEFT: "+ this.left.position.top );
+                        console.log("ESTO es RIGHT: "+ this.right.position.top );
+                    */
+                },
+                inside: function(p) {
+                    // p position obj, properties left, top
+
+                    //p.left mayor que this.position.left y
+                        // menor que width
+                    //p.top mayor que this.position.top y 
+                        // menor que height
+
+                    a = parseInt(p.left);
+                    b = parseInt(p.top);
+
+                    return ( 
+                        (a > this.position.left ) &&
+                        (a < this.position.left+this.width) &&
+                        (b > this.position.top ) &&
+                        (b < this.position.top+this.height)
+                    );
+                }
+            });
+
+            function actualizarPosiciones(e){
+
+                $("#xpos").val(e.offset().top);
+                $("#ypos").val(e.offset().left);
+
+            };
+
+        </script>
+    </head>
+    <body>
+        <script>
+            
+            window.onload=function(){ 
+
+
+           }
+        </script>
+            <div class="Info">
+            </div>
+            <div class="row buttons">
+                <input type="button" value="getPos" onclick=actualizarPosiciones($("#Init"));>
+            </div>
+        <div id="container">
+        </div>
+
+    <script>
+
+
+                $(".Info").append($("<label>").prop('for','xpos').text('X position'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','xpos'));
+                $(".Info").append($("<label>").prop('for','ypos').text('Y position'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','ypos'));
+                $(".Info").append($("<label>").prop('for','inside').text('InsideObject'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','inside'));
+                $(".Info").append($("<label>").prop('for','mouseX').text('Mouse position: X'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','mouseX'));
+                $(".Info").append($("<label>").prop('for','mouseY').text('Mouse position: Y'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','mouseY'));
+
+                $(".Info").append($("<label>").prop('for','up').text('Arriba'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','up'));
+                $(".Info").append($("<label>").prop('for','down').text('Abajo'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','down'));
+                $(".Info").append($("<label>").prop('for','left').text('Izquierda'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','left'));
+                $(".Info").append($("<label>").prop('for','right').text('Derecha'));
+                $(".Info").append($("<input>").prop('type','text').attr('id','right'));
+
+            $("#container").append($("<div>").prop('id','Init').prop('class','Element').text('Start'));
+
+                var currentMousePos = { top: -1, left: -1 };
+
+                miArea = new Area(0,0,0,10);
+                miArea.examine($("#Init"));
+
+                $(document).mousemove(function(event) {
+                    currentMousePos.left = event.pageX;
+                    currentMousePos.top = event.pageY;
+                    
+                    $("#mouseX").val(currentMousePos.left);
+                    $("#mouseY").val(currentMousePos.top);
+                    console.log(miArea);
+                    $("#inside").val(miArea.inside(currentMousePos));
+                    $("#up").val(miArea.up.inside(currentMousePos));
+                    $("#down").val(miArea.down.inside(currentMousePos));
+                    $("#left").val(miArea.left.inside(currentMousePos));
+                    $("#right").val(miArea.right.inside(currentMousePos));
+                });
+
+/*
+*/
+    </script>
+
+
+    </body>
+</html>

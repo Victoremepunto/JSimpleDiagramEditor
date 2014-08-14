@@ -1,0 +1,155 @@
+
+<html>
+    <meta charset='utf-8'>
+    <head>
+        <style>
+            .container
+            {
+                position:relative;
+                border: 1px solid;
+                height: 500px;
+                width:  500px;
+
+                left: 50px;
+                top: 100px;
+
+                overflow: auto;
+            }
+
+/*
+            .node
+            {
+                position: absolute;
+                border-radius: 5px;
+                box-shadow: 5px 5px 5px #888888;
+                color: #fff;
+                padding: 10px;
+                width: 200px;
+                background-color: #5cb85c;
+                height: 20px;
+                width: 220px;
+            }
+*/
+            .node
+            {
+                height: 100px;
+                width:  100px;
+                border: solid 1px;
+                text-align: center;
+                position: absolute;
+            }
+    
+            .multiNode
+            {
+                position: absolute;
+                border-radius: 5px;
+                box-shadow: 5px 5px 5px #888888;
+                color: #fff;
+                height: 40px;
+                width: 220px;
+                background-color: #5cb85c;
+                padding: 10px;
+                /*
+                height: 100px;
+                width:  100px;
+                border: solid 1px;
+                text-align: center;
+                position: absolute;
+                */
+            }
+
+            .multiNodeContainer
+            {
+                position:static;
+            }
+
+            .multiNodeElement
+            {
+                border: solid 1px;
+            }
+
+            .palette
+            {
+                /*
+                position:absolute;
+                display: inline;
+                */
+                position: fixed;
+                float: right;
+                border: 1px solid;
+                height: 300px;
+                width:  200px;
+                left:   600px;
+            }
+
+            .placeholder {
+                position:absolute;
+                background: green;
+                opacity: 0.4;
+            }
+            
+            .close {
+                position:relative;
+                float: right;
+                display: inline;
+                cursor: default;
+                z-index: 10;
+            }
+
+            .info
+            {
+                border: 1px solid;
+                height: 100px;
+                width:  200px;
+                /*
+                position:absolute;
+                top:    550px;
+                left:   650px;
+                */
+            }
+
+        </style>
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="../js/jquery-ui.js"></script>
+        <script type="text/javascript" src="area-notifier-2.js"></script>
+        <script type="text/javascript" src="node.js"></script>
+        <script type="text/javascript" src="process.js"></script>
+        <script type="text/javascript" src="painter.js"></script>
+        <script type="text/javascript" src="grid-manager.js"></script>
+    </head>
+    <body>
+        <div id='palette' class="palette">
+            <ul>
+            <div id="tarea1" data-type="simple">tarea1</div>
+            <div id="tarea2" data-type="simple">tarea2</div>
+            <div id="tarea3" data-type="simple">tarea3</div>
+            <div id="tarea4" data-type="simple">tarea4</div>
+            <div id="tarea5" data-type="simple">tarea5</div>
+            <div id="tarea6" data-type="simple">tarea6</div>
+            <div id="tarea7" data-type="simple">tarea7</div>
+            <div id="parallel" data-type="multi">parallel</div>
+            </ul>
+        </div>
+        <div id='container' class="container">
+            <div id='areas'></div>
+            <div id='wall'></div>
+        </div>
+        <script>
+
+            var grid = new GridManager({
+                'container': "container",
+                'chooser'  : "palette",
+            });
+            /*
+            grid.addElement($('#parallel'));
+            grid.addElement($('#parallel'),0,'down');
+            grid.addElement($('#parallel'),0,'down');
+            grid.addElement($('#parallel'),1,'right');
+            */
+            grid.addElement($('#simple'));
+            grid.addElement($('#simple'),0,'down');
+            grid.addElement($('#simple'),0,'down');
+            grid.addElement($('#simple'),1,'right');
+        </script>
+    </body>
+</html>
