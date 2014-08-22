@@ -9,10 +9,10 @@ var Node = function(data)
     this.data;
     this.rel_position; // from previous node
     this.positions;
-    this.connector;
 
     this.init(data);
 };
+
 $.extend(Node.prototype,
 {
     init: function(data)
@@ -214,16 +214,6 @@ $.extend(Node.prototype,
             (this.getFirstNext().getRelPosition() != this.getRelPosition()));
     },
 
-    setConnector: function(c)
-    {
-        this.connector = c;
-        return this;
-    }, 
-
-    getConnector: function()
-    {
-        return this.connector;
-    },
 /*
     toString: function()
     {

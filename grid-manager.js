@@ -38,19 +38,13 @@ $.extend(GridManager.prototype,
         {
     
         if (typeof(data.area) != 'undefined')
-        {
             grid.addElement(
                 $(data.element),
                 $(data.area.element).attr('id'),
-                //$(data.element).attr('id'),
                 data.area.getInvaded()
             );
-        }
         else
-        {
-            console.log('under construction...');
             grid.addElement(data.element);
-        }
 
 /**********
             var area_invaded = (typeof(data.area) != 'undefined') ?

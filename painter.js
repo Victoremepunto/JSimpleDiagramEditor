@@ -24,7 +24,7 @@ $.extend(Painter.prototype,
     
     initConnections: function()
     {
-        jsPlumb.bind("ready", function() {
+//        jsPlumb.bind("ready", function() {
             // REMOVE IF UPDATE TO 1.6.X jsPlumb.setContainer($("#container"));
             jsPlumb.importDefaults({
                 Container: $('#container'),
@@ -38,7 +38,7 @@ $.extend(Painter.prototype,
                 Connector: ["Flowchart", { gap: 5, stub:[40, 60] } ],
                 ConnectionOverlays: [ [ "PlainArrow", { location:1, width:14, height:10 } ] ],
             });
-        });
+//        });
     },
 
     createDropZone: function(e)
@@ -92,8 +92,6 @@ $.extend(Painter.prototype,
     {
         var element = this.painted[id];
         var position = {top: parseInt(element.div.css('top')), left:parseInt(element.div.css('left'))};
-        //var position = element.div.position();
-        //var position = element.div.position();
         var rel_position = element.node.rel_position;
         var dimensions = {height: element.div.outerHeight(),
                           width:  element.div.outerWidth()};
@@ -104,10 +102,12 @@ $.extend(Painter.prototype,
         if (Object.keys(this.painted).length > 0)
         {
 
+            // get proper direction to move nodes
             if ( (typeof(element.node.getFirstNext()) != 'undefined') &&
                 (element.node.rel_position != element.node.getFirstNext().rel_position) )
                     rel_position = element.node.getFirstNext().rel_position ;
 
+            // not the first element
             if (typeof(rel_position) != 'undefined')
             {
                 if (rel_position == 'inside')
@@ -121,8 +121,6 @@ $.extend(Painter.prototype,
 
                     var divs = this.getDivsToReallocate(position,'down');
 
-                    console.log(container.div);
-
                     if (this.vacuum > 0);
                         dimensions.height -= this.vacuum;
 
@@ -130,34 +128,40 @@ $.extend(Painter.prototype,
                     this.constrain(container.div,element.div);
 
                 }
-                else{
-        
+
+                else 
+                {
+                    if (element.node.getType() == 'multi')
+                        for (var idx in element.node.getData('nodes'))
+                            delete this.painted[element.node.getData('nodes')[idx].getId()];
 
                     if (element.node.isCorner())
                     {
-                        this.swapSiblings(element.div,this.painted[element.node.getFirstNext().getId()].div);
-                        position = {top: parseInt(element.div.css('top')), left:parseInt(element.div.css('left'))};
+                            this.swapSiblings(element.div,this.painted[element.node.getFirstNext().getId()].div);
+                            position = {top: parseInt(element.div.css('top')), left:parseInt(element.div.css('left'))};
                         //rel_position = element.node.getFirstNext().getRelPosition();
                     }
-
-                    var divs = this.getDivsToReallocate(position,rel_position);
-                    this.reallocate(divs,rel_position,true,dimensions);
                 }
+
+                var divs = this.getDivsToReallocate(position,rel_position);
+                this.reallocate(divs,rel_position,true,dimensions);
             }
+
+/*
+            if (typeof(element.node.getFirstNext()) == 'undefined')
+                this.eraseConnector(element.node.getPrevious());
+*/
+
+            if (typeof(this.painted[id]['connector']) != 'undefined')
+                this.eraseConnector(element.node);
+
+            element.div.remove();
+            delete this.painted[id];
+            $(".placeholder").remove();
+
+            if (Object.keys(this.painted).length == 0)
+                this.wall.droppable('enable');
         }
-
-        if (element.node.getType() == 'multi')
-            for (var idx in element.node.getData('nodes'))
-                delete this.painted[element.node.getData('nodes')[idx].getId()];
-
-        this.eraseConnector(element.node);
-
-        element.div.remove();
-        delete this.painted[id];
-        $(".placeholder").remove();
-
-        if (Object.keys(this.painted).length == 0)
-            this.wall.droppable('enable') && console.log('here');
     },
 
     swapSiblings: function(a,b)
@@ -172,27 +176,18 @@ $.extend(Painter.prototype,
     paintNode: function(node)
     {
         var div = this.createDiv(node);
-        var connection = undefined;
+        var connector = undefined;
+        var dimensions = { 'height': div.outerHeight(), 'width':  div.outerWidth() };
 
         if (node.rel_position == 'inside')
         {
+
             var container = this.getPainted()[node.getPrevious().getId()];
-            var dimensions = { height: div.outerHeight(),
-                               width:  div.outerWidth() };
-          
             var position = { 'top' : parseInt(container.div.css('top')),
                              'left': parseInt(container.div.css('left'))};
-            
-         
 
             position.top += dimensions.height;
             position.left += dimensions.width;
-/*
-            var position = { 'top' : parseInt(container.div.css('top') + dimensions.height),
-                             'left': parseInt(container.div.css('left') + dimensions.width)
-                           };
-*/  
-            //var divs = this.getDivsToReallocate(container.div.position(),'down');
 
             var divs = this.getDivsToReallocate(position,'down');
 
@@ -203,12 +198,11 @@ $.extend(Painter.prototype,
                 dimensions.height -= this.vacuum;
 
             this.reallocate(divs,'down',false,dimensions);
+
         }
 
         else
         {
-            var dimensions = { height: div.outerHeight(),
-                width:  div.outerWidth() };
 
             var position = this.getWhereToPaint(node);
             var divs = this.getDivsToReallocate(position,node.rel_position);
@@ -221,8 +215,6 @@ $.extend(Painter.prototype,
                     case 'right' : position.left += this.vacuum; break;
                 }
 
-            //div.css('top',position.top);
-            //div.css('left',position.left);
             div.offset(position);
             
             this.addToWall(div);
@@ -233,53 +225,46 @@ $.extend(Painter.prototype,
                 areas: this.getAreasForNode(node.getData('type'))
             });
 
-            //this.painted[node.id] = { 'div': div, 'node': node, 'area': area };
             this.listenAreaInvaded(div);
             this.listenAreaReleased(div);
-            console.log(node.getPrevious());
-//            this.listenAreaDrop(div);
-
-            if (typeof(node.getPrevious()) != 'undefined')
-            {
-                // this.drawConnector(node.getPrevious().getId().toString(),node.getId().toString());
-                // connector = this.drawConnector(node.getPrevious().getId().toString(),node.getId().toString());
-                connection = this.drawConnector(node);
-//                console.log(connection);
-            }
         }
 
-        this.painted[node.id] = { 'div': div, 'node': node, 'area': area, 'connection':connection };
 
-//$(obj).draggable('option', 'disabled');
+        this.painted[node.id] = { 'div': div, 'node': node, 'area': area };
+
+        if (typeof(node.getPrevious()) != 'undefined')
+            this.painted[node.getId()]['connector'] = this.drawConnector(node);
+
+        var next_node = node.getNext()[(node.getRelPosition() == 'down'?0:1)];
+
+        if (typeof(next_node) != 'undefined')
+            this.painted[next_node.getId()]['connector'] = this.drawConnector(next_node);
 
 
         if (! this.wall.droppable('option','disabled') && Object.keys(this.painted).length > 0)
             this.wall.droppable('disable');
 
+        jsPlumb.repaintEverything();
+    
     },
 
-    //drawConnector: function(from,to)
     drawConnector: function(node)
     {
         var c;
         var from = node.getPrevious().getId().toString();
         var to   = node.getId().toString();
 
-        jsPlumb.bind("ready", function(){
-            node.setConnector(jsPlumb.connect({
-                source:from,
-                target:to,
-            }));
-        });
+        return ((typeof(from) != 'undefined') && (typeof(to) != 'undefined')) ?
+            jsPlumb.connect({'source':from,'target':to}) : undefined;
     },
 
     eraseConnector: function(node)
     {
-        if (node.getConnector() != 'undefined')
+        if ((typeof(node) != 'undefined') &&
+            (typeof(this.painted[node.getId()]) != 'undefined'))
         {
-            console.log('erasing connector');
-            jsPlumb.detach(node.getConnector());
-            node.setConnector(undefined);
+            jsPlumb.detach(this.painted[node.getId()]['connector']);
+            delete this.painted[node.getId()]['connector']
         }
     },
 
@@ -337,16 +322,10 @@ $.extend(Painter.prototype,
         {
 
             var previous = this.painted[node.getPrevious().getId()];
-//            position = previous.div.position();
             position = {top: parseInt(previous.div.css('top')), left: parseInt(previous.div.css('left')) };
-//            position.left += $('#container').scrollLeft();
-//            position.top  += $('#container').scrollTop();
-            
+
             switch(rel_position){
-/*
-                case 'down': position.top += previous.div.outerHeight(); break;
-                case 'right': position.left += previous.div.outerWidth(); break;
-*/
+
                 case 'down': position.top += this.getWiderDiv(this.getDivsInLine(position,'down'),'down').outerHeight(); break;
                 case 'right': position.left += this.getWiderDiv(this.getDivsInLine(position,'right'),'right').outerWidth(); break;
                 case 'inside':
@@ -373,7 +352,9 @@ $.extend(Painter.prototype,
         {
             var item = this.getPainted()[i];
             
-            if (item.div.position()[reference] == position[reference])
+            var element_position = {top: parseInt(item.div.css('top')), left:parseInt(item.div.css('left'))};
+            if (element_position[reference] == position[reference])
+            //if (item.div.position()[reference] == position[reference])
                 divs.push(item.div);
         }
         return divs;
@@ -538,14 +519,18 @@ $.extend(Painter.prototype,
                     divs[i].css('left',operation+distance);
                     break;
             }
-//            this.painted[divs[i].prop('id')].area.resetAreas();
+
+            var element = this.painted[divs[i].attr('id')];
 
 /*
-        jsPlumb.bind("ready", function() {
-            jsPlumb.repaintEverything()
-        });
+            if (typeof(this.painted[element.node.getPrevious().getId()]) == 'undefined')
 */
+            if (
+                (typeof(element.node.getPrevious()) == 'undefined') ||
+                (typeof(this.painted[element.node.getPrevious().getId()]) == 'undefined'))
+                this.eraseConnector(element.node);
 
+            jsPlumb.repaintEverything();
         }
     },
 
@@ -625,7 +610,6 @@ $.extend(Painter.prototype,
        
         */
         });
-        console.log('listening');
     },
 
     expand: function(container,content)

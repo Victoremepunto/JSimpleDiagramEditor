@@ -23,7 +23,7 @@
                 width: 200px;
                 background-color: #5cb85c;
                 height: 20px;
-                width: 220px;
+                width: 520px;
             }
 
             .multiNode
@@ -84,7 +84,7 @@
         </style>
         <script type="text/javascript" src="../js/jquery.js"></script>
         <script type="text/javascript" src="../js/jquery-ui.js"></script>
-        <script type="text/javascript" src="../js/jsplumb.js"></script>
+        <script type="text/javascript" src="../js/jsPlumb.js"></script>
         <script type="text/javascript" src="area-notifier.js"></script>
         <script type="text/javascript" src="node.js"></script>
         <script type="text/javascript" src="process.js"></script>
@@ -108,10 +108,13 @@
         </div>
         <script>
 
-            var grid = new GridManager({
-                'container': "container",
-                'chooser'  : "palette",
-            });
+        var grid = new GridManager({
+            'container': "container",
+            'chooser'  : "palette",
+        });
+
+        jsPlumb.bind("ready", function(){
+
 
 /*
 
@@ -128,10 +131,14 @@
 */
 
 //            $('#container').resizable();
+/*
             grid.addElement($('#simple'));
             grid.addElement($('#simple'),0,'down');
             grid.addElement($('#simple'),0,'down');
             grid.addElement($('#simple'),1,'right');
+*/
+
+        });
 
         </script>
     </body>
