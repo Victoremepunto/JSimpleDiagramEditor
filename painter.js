@@ -101,15 +101,26 @@ $.extend(Painter.prototype,
 
         if (Object.keys(this.painted).length > 0)
         {
-
-            // get proper direction to move nodes
-            if ( (typeof(element.node.getFirstNext()) != 'undefined') &&
-                (element.node.rel_position != element.node.getFirstNext().rel_position) )
-                    rel_position = element.node.getFirstNext().rel_position ;
-
-            // not the first element
-            if (typeof(rel_position) != 'undefined')
+            // the first element
+            if (typeof(rel_position) == 'undefined')
             {
+                if (typeof(element.node.getFirstNext()) != 'undefined')
+                {
+                    rel_position = element.node.getFirstNext().getRelPosition();
+                    this.eraseConnector(element.node.getFirstNext());                    
+                    var divs = this.getDivsToReallocate(position,rel_position);
+                    this.reallocate(divs,rel_position,true,dimensions);
+                    jsPlumb.repaintEverything();
+                }
+            }
+            else
+            {
+
+                // get proper direction to move nodes
+                if ( (typeof(element.node.getFirstNext()) != 'undefined') &&
+                    (element.node.rel_position != element.node.getFirstNext().rel_position) )
+                        rel_position = element.node.getFirstNext().rel_position ;
+
                 if (rel_position == 'inside')
                 {
                     var container = this.getPainted()[element.node.getPrevious().getId()];
@@ -138,6 +149,7 @@ $.extend(Painter.prototype,
                     if (element.node.isCorner())
                     {
                             this.swapSiblings(element.div,this.painted[element.node.getFirstNext().getId()].div);
+                            this.swapConnectors(id,element.node.getFirstNext().getId());
                             position = {top: parseInt(element.div.css('top')), left:parseInt(element.div.css('left'))};
                         //rel_position = element.node.getFirstNext().getRelPosition();
                     }
@@ -147,13 +159,17 @@ $.extend(Painter.prototype,
                 this.reallocate(divs,rel_position,true,dimensions);
             }
 
-/*
-            if (typeof(element.node.getFirstNext()) == 'undefined')
-                this.eraseConnector(element.node.getPrevious());
-*/
-
             if (typeof(this.painted[id]['connector']) != 'undefined')
+            {
                 this.eraseConnector(element.node);
+
+                if (typeof(element.node.getFirstNext()) != 'undefined')
+                {
+                    jsPlumb.setSource(this.painted[element.node.getFirstNext().getId()]['connector'],
+                        element.node.getPrevious().getId().toString());
+                    jsPlumb.repaintEverything();
+                }
+            }
 
             element.div.remove();
             delete this.painted[id];
@@ -171,6 +187,14 @@ $.extend(Painter.prototype,
         a.css('left',b.css('left'));
         b.css('top',position.top);
         b.css('left',position.left);
+    },
+
+    swapConnectors: function(a,b)
+    {
+        var c_a = this.painted[a]['connector'];
+        var c_b = this.painted[b]['connector'];
+        jsPlumb.setSource(c_b,c_a.source.id);
+        jsPlumb.setSource(c_a,c_b.target.id);
     },
 
     paintNode: function(node)
@@ -240,7 +264,6 @@ $.extend(Painter.prototype,
         if (typeof(next_node) != 'undefined')
             this.painted[next_node.getId()]['connector'] = this.drawConnector(next_node);
 
-
         if (! this.wall.droppable('option','disabled') && Object.keys(this.painted).length > 0)
             this.wall.droppable('disable');
 
@@ -261,7 +284,8 @@ $.extend(Painter.prototype,
     eraseConnector: function(node)
     {
         if ((typeof(node) != 'undefined') &&
-            (typeof(this.painted[node.getId()]) != 'undefined'))
+            (typeof(this.painted[node.getId()]) != 'undefined') &&
+            (typeof(this.painted[node.getId()]['connector']) != 'undefined'))
         {
             jsPlumb.detach(this.painted[node.getId()]['connector']);
             delete this.painted[node.getId()]['connector']
@@ -494,6 +518,8 @@ $.extend(Painter.prototype,
     {
         var operation = reverse ? '-=' : '+=';
 
+        console.log(divs);
+
         for (i=0;i<divs.length;i++)
         {
             switch(direction)
@@ -522,9 +548,6 @@ $.extend(Painter.prototype,
 
             var element = this.painted[divs[i].attr('id')];
 
-/*
-            if (typeof(this.painted[element.node.getPrevious().getId()]) == 'undefined')
-*/
             if (
                 (typeof(element.node.getPrevious()) == 'undefined') ||
                 (typeof(this.painted[element.node.getPrevious().getId()]) == 'undefined'))
